@@ -12,7 +12,7 @@ import java.util.concurrent.TimeUnit;
 
 public class FluxAndMonoTransformTest {
 
-    private List<String> names = Arrays.asList("Vasu", "Jack", "Joe", "Jen");
+    private final List<String> names = Arrays.asList("Vasu", "Jack", "Joe", "Jen");
 
     @Test
     public void transformUsingMap() {
@@ -24,7 +24,7 @@ public class FluxAndMonoTransformTest {
 
     @Test
     public void transformUsingMap_Length() {
-        Flux<Integer> namesFlux = Flux.fromIterable(names).map(e -> e.length());
+        Flux<Integer> namesFlux = Flux.fromIterable(names).map(String::length);
         StepVerifier.create(namesFlux.log())
                 .expectNext(4, 4, 3, 3)
                 .verifyComplete();
@@ -32,7 +32,7 @@ public class FluxAndMonoTransformTest {
 
     @Test
     public void transformUsingMap_Length_Repeat() {
-        Flux<Integer> namesFlux = Flux.fromIterable(names).map(e -> e.length()).repeat(1);
+        Flux<Integer> namesFlux = Flux.fromIterable(names).map(String::length).repeat(1);
         StepVerifier.create(namesFlux.log())
                 .expectNext(4, 4, 3, 3)
                 .expectNext(4, 4, 3, 3)
@@ -41,7 +41,7 @@ public class FluxAndMonoTransformTest {
 
     @Test
     public void transformUsingMap_filter() {
-        Flux<String> namesFlux = Flux.fromIterable(names).filter(e -> e.length() > 3).map(e -> e.toUpperCase()).repeat(1);
+        Flux<String> namesFlux = Flux.fromIterable(names).filter(e -> e.length() > 3).map(String::toUpperCase).repeat(1);
         StepVerifier.create(namesFlux.log())
                 .expectNext("VASU", "JACK")
                 .expectNext("VASU", "JACK")
