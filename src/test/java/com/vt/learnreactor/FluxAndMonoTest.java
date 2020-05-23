@@ -2,6 +2,7 @@ package com.vt.learnreactor;
 
 import org.junit.jupiter.api.Test;
 import reactor.core.publisher.Flux;
+import reactor.core.publisher.Mono;
 import reactor.test.StepVerifier;
 
 public class FluxAndMonoTest {
@@ -54,12 +55,27 @@ public class FluxAndMonoTest {
     @Test
     public void fluxTestElementsCount_withError() {
         Flux<String> stringFlux = Flux.just("Hello", "World", "Reactor")
-                .concatWith(Flux.error(new RuntimeException("FluxError"))).log();
+                .concatWith(Flux.error(new RuntimeException("FluxError")));
 
-        StepVerifier.create(stringFlux)
+        StepVerifier.create(stringFlux.log())
                 .expectNextCount(3)
 //                .expectError(RuntimeException.class)
                 .expectErrorMessage("FluxError")
+                .verify();
+    }
+
+    @Test
+    public void monoTest(){
+        Mono<String> mono = Mono.just("Hello Mono");
+        StepVerifier.create(mono.log())
+                .expectNext("Hello Mono")
+                .verifyComplete();
+    }
+
+    @Test
+    public void monoTest_Error(){
+        StepVerifier.create(Mono.error(new RuntimeException("MonoError")).log())
+                .expectErrorMessage("MonoError")
                 .verify();
     }
 }
