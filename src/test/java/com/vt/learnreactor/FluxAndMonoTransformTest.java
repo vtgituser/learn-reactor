@@ -91,7 +91,7 @@ public class FluxAndMonoTransformTest {
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
-        return Arrays.asList(t, "dbValue");
+        return Arrays.asList(t, t+" dbValue");
     }
 
 }
