@@ -41,4 +41,16 @@ public class FluxAndMonoWithTimeTest {
                 .expectNext(0, 1, 2)
                 .verifyComplete();
     }
+
+    @Test
+    public void infiniteSequenceMap_withDelay() {
+        Flux<Integer> longFlux = Flux.interval(Duration.ofMillis(200))
+                .delayElements(Duration.ofSeconds(1))
+                .map(Long::intValue)
+                .take(3);
+        StepVerifier.create(longFlux.log())
+                .expectSubscription()
+                .expectNext(0, 1, 2)
+                .verifyComplete();
+    }
 }
