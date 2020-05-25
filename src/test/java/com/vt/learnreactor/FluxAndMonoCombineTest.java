@@ -3,6 +3,7 @@ package com.vt.learnreactor;
 import org.junit.jupiter.api.Test;
 import reactor.core.publisher.Flux;
 import reactor.test.StepVerifier;
+import reactor.test.scheduler.VirtualTimeScheduler;
 
 import java.time.Duration;
 
@@ -47,15 +48,22 @@ public class FluxAndMonoCombineTest {
 
     @Test
     public void combineUsingConcat_withDelay(){
+        VirtualTimeScheduler.getOrSet();
         Flux<String> flux1 = Flux.just("A", "B", "C").delayElements(Duration.ofSeconds(1));
         Flux<String> flux2 = Flux.just("D", "E", "F").delayElements(Duration.ofSeconds(1));
         Flux<String> merge = Flux.concat(flux1, flux2); //concat maintains order, unlike merge
-        StepVerifier.create(merge.log())
+        StepVerifier.withVirtualTime(() -> merge.log())
+                .expectSubscription()
+                .thenAwait(Duration.ofSeconds(6))
+                .expectNext("A", "B", "C")
+                .expectNext("D", "E", "F")
+                .verifyComplete();
+        /*StepVerifier.create(merge.log())
                 .expectSubscription()//Verify subscription event
                 .expectNext("A", "B", "C")
                 .expectNext("D", "E", "F")
 //                .expectNextCount(6)
-                .verifyComplete();
+                .verifyComplete();*/
     }
 
     @Test
